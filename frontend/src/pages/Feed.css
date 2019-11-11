@@ -1,0 +1,82 @@
+section#post-list {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0 30px;
+}
+
+section#post-list article {
+  background: #fff;
+  border: 1px solid #ddd;
+  margin-top: 30px;
+  border-radius: 4px;
+}
+
+section#post-list article header {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+section#post-list article header .user-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+section#post-list article header .user-info img {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+}
+section#post-list article header .user-info div {
+  margin: 0 10px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+section#post-list article header .user-info span {
+  font-size: 13px;
+  font-weight: bold;
+}
+
+section#post-list article header .user-info span.place {
+  font-size: 11px;
+  font-weight: normal;
+  color: #666;
+  margin-top: 3px;
+}
+section#post-list article > img {
+  width: 100%;
+}
+
+section#post-list article footer {
+  padding: 20px;
+}
+
+section#post-list article footer .actions {
+  margin-bottom: 10px;
+}
+
+section#post-list article footer .actions button {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+section#post-list article footer .actions img {
+  height: 20px;
+  margin-right: 10px;
+}
+
+section#post-list article footer p {
+  font-size: 12px;
+  margin-top: 2px;
+  line-height: 18px;
+}
+
+section#post-list article footer p span {
+  color: #329;
+  display: block;
+}
