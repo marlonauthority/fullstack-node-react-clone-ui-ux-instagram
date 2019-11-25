@@ -1,80 +1,90 @@
-import React, { useEffect, useState } from 'react';
-import api from '../services/api';
-import io from 'socket.io-client';
+import React, { useEffect, useState } from "react";
+import api from "../services/api";
+import io from "socket.io-client";
 
-import './Feed.css';
+import "./Feed.css";
+// import { Container } from "./heart";
+import Heart from "../components/Heart";
 
-import more from '../assets/more.svg';
-import like from '../assets/like.svg';
-import comment from '../assets/comment.svg';
-import send from '../assets/send.svg';
+import more from "../assets/more.svg";
+import like from "../assets/like.svg";
+import comment from "../assets/comment.svg";
+import send from "../assets/send.svg";
 
 export default function Feed() {
-  const [posts, setPosts] = useState([])
+  const [posts, setPosts] = useState([]);
+  const [hearted, setHearted] = useState(false);
 
   useEffect(() => {
     async function loadData() {
-      const response = await api.get('posts');
-      setPosts(response.data)
+      const response = await api.get("posts");
+      setPosts(response.data);
     }
     loadData();
-  }, [])
+  }, []);
 
-  // useEffect(() => {
-  //  function registerToSocket(){
-  //     const socket = io('http://localhost:3333');
+  useEffect(() => {
+    async function registerToSocket() {
+      const socket = await io("http://localhost:3333");
 
-  //     socket.on('post', newPost => {
-  //       setPosts({ posts: [newPost, ...posts] })
-  //     });
+      socket.on("post", newPost => {
+        setPosts([newPost, ...posts]);
+      });
 
-  //     socket.on('like', likedPost => {
-  //       setPosts({
-  //         posts: posts.map(post => post._id === likedPost.id ? likedPost : post)
-  //       })
-  //     })
+      socket.on("like", likedPost => {
+        setPosts(
+          posts.map(post => (post._id === likedPost._id ? likedPost : post))
+        );
+        setHearted(
+          posts.map(post => (post._id === likedPost._id ? true : false))
+        );
+      });
+    }
+    registerToSocket();
+  }, [posts]);
 
-  //   }
-  //   registerToSocket()
-  // }, [posts])
-
-
-
-  function handleLike(id){
-    // console.log(id)
+  function handleLike(id) {
     api.post(`/posts/${id}/like`);
+    // setHearted(true);
   }
 
-
   return (
-   <section id="post-list">
-     {posts.map(post => (
-      <article key={post._id}>
-       <header>
-         <div className="user-info">
-          <img src={`http://localhost:3333/files/${post.image}`} alt={post.author} />
-          <div>
-           <span>{post.author}</span>
-           <span className="place">{post.place}</span>
-           </div>
-         </div>
-         <img src={more} alt="Mais"/>
-       </header>
-       <img src={`http://localhost:3333/files/${post.image}`} alt={post.author} />
-       <footer>
-        <div className="actions">
-          <button type="button" onClick={() => handleLike(post._id)}>
-            <img src={like} alt=""/>
-          </button>
-          <img src={comment} alt="" />
-          <img src={send} alt="" />
-        </div>
-        <strong>{post.likes}</strong>
-        <p>{post.description}<span></span></p>
-       </footer>
-     </article>
-     ))}
-
-   </section>
+    <section id="post-list">
+      {posts.map(post => (
+        <article key={post._id}>
+          <header>
+            <div className="user-info">
+              <img
+                src={`http://localhost:3333/files/${post.image}`}
+                alt={post.author}
+              />
+              <div>
+                <span>{post.author}</span>
+                <span className="place">{post.place}</span>
+              </div>
+            </div>
+            <img src={more} alt="Mais" />
+          </header>
+          <img
+            src={`http://localhost:3333/files/${post.image}`}
+            alt={post.author}
+          />
+          <footer>
+            <div className="actions">
+              <button type="button" onClick={() => handleLike(post._id)}>
+                {!hearted ? <img src={like} alt="" /> : <Heart hearted />}
+              </button>
+              <img src={comment} alt="" />
+              <img src={send} alt="" />
+            </div>
+            <strong>{post.likes}</strong>
+            <p>
+              {post.description}
+              <span></span>
+            </p>
+          </footer>
+        </article>
+      ))}
+    </section>
   );
 }

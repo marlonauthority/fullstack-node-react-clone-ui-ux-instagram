@@ -61,13 +61,15 @@ section#post-list article footer .actions {
 
 section#post-list article footer .actions button {
   border: 0;
-  background: transparent;
+  outline: 0;
+  background-color: transparent;
   cursor: pointer;
 }
 
 section#post-list article footer .actions img {
   height: 20px;
   margin-right: 10px;
+  margin-left: 10px;
 }
 
 section#post-list article footer p {
