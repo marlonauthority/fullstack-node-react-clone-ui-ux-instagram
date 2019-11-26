@@ -29,6 +29,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  userInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  imageUserAvatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+  userInfoText: {
+    flexDirection: 'column',
+    marginLeft: 10,
+  },
   name: {
     fontSize: 14,
     color: '#000',
@@ -90,8 +104,17 @@ function Feed({ navigation }) {
           <View style={styles.feedItem}>
             <View style={styles.feedItemHeader}>
               <View style={styles.userInfo}>
-                <Text style={styles.name}>{item.author}</Text>
-                <Text style={styles.place}>{item.place}</Text>
+                <Image
+                  style={styles.imageUserAvatar}
+                  source={{
+                    uri:
+                      'https://api.adorable.io/avatars/50/abott@adorable.png',
+                  }}
+                />
+                <View style={styles.userInfoText}>
+                  <Text style={styles.name}>{item.author}</Text>
+                  <Text style={styles.place}>{item.place}</Text>
+                </View>
               </View>
 
               <Image source={more} />

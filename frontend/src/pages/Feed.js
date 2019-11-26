@@ -55,7 +55,7 @@ export default function Feed() {
           <header>
             <div className="user-info">
               <img
-                src={`http://localhost:3333/files/${post.image}`}
+                src="https://api.adorable.io/avatars/50/abott@adorable.png"
                 alt={post.author}
               />
               <div>
