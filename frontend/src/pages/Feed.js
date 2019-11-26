@@ -77,10 +77,10 @@ export default function Feed() {
               <img src={comment} alt="" />
               <img src={send} alt="" />
             </div>
-            <strong>{post.likes}</strong>
+            <strong>{post.likes} curtidas</strong>
             <p>
               {post.description}
-              <span></span>
+              <span>{post.hashtags}</span>
             </p>
           </footer>
         </article>
