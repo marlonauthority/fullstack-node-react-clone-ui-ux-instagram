@@ -8,6 +8,7 @@ import {
   StyleSheet,
 } from 'react-native';
 
+import io from 'socket.io-client';
 import api from '../services/api';
 
 import camera from '../assets/camera.png';
@@ -35,9 +36,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   imageUserAvatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
   },
   userInfoText: {
     flexDirection: 'column',
@@ -90,6 +91,23 @@ function Feed({ navigation }) {
     }
     loadData();
   }, []);
+
+  useEffect(() => {
+    async function registerToSocket() {
+      const socket = io('http://localhost:3333');
+
+      socket.on('post', newPost => {
+        setPosts([newPost, ...posts]);
+      });
+
+      socket.on('like', likedPost => {
+        setPosts(
+          posts.map(post => (post._id === likedPost._id ? likedPost : post))
+        );
+      });
+    }
+    registerToSocket();
+  }, [posts]);
 
   function handleLike(id) {
     api.post(`/posts/${id}/like`);
