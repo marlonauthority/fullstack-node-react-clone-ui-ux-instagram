@@ -17,12 +17,22 @@ module.exports = {
     const [name, ext] = image.split(".");
     // insere a extensao
     const fileName = `${name}.jpg`;
+    const small = `small${name}.jpg`;
 
     // converte a imagem para um tamanho menor
-    await sharp(req.file.path)
+    const imageconverted = await sharp(req.file.path)
       .resize(500)
       .jpeg()
       .toFile(path.resolve(req.file.destination, "resized", fileName));
+
+    const newimageconverted = await sharp(req.file.path)
+      .resize(50)
+      .jpeg()
+      .toFile(path.resolve(req.file.destination, "resized", small));
+
+    //console.log(newimageconverted);
+
+    const aspectRatio = imageconverted.width / imageconverted.height;
 
     // apaga a imagem original
     fs.unlinkSync(req.file.path);
@@ -33,7 +43,9 @@ module.exports = {
       place,
       description,
       hashtags,
-      image: fileName
+      image: fileName,
+      imagesmall: small,
+      aspectratio: aspectRatio
     });
 
     req.io.emit("post", post);

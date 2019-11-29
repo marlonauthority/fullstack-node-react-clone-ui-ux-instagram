@@ -7,6 +7,11 @@ const PostSchema = new moongose.Schema(
     description: String,
     hashtags: String,
     image: String,
+    imagesmall: String,
+    aspectratio: {
+      type: Number,
+      default: 1
+    },
     likes: {
       type: Number,
       default: 0
