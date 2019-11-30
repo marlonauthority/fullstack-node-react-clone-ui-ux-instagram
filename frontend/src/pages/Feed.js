@@ -17,8 +17,9 @@ export default function Feed() {
 
   useEffect(() => {
     async function loadData() {
-      const response = await api.get("posts");
-      setPosts(response.data);
+      const { data } = await api.get("posts");
+      const newData = data.docs;
+      setPosts(newData);
     }
     loadData();
   }, []);
