@@ -21,4 +21,4 @@ yarn dev
 react-native run-ios ou android
 ```
 
-<img src="" />
+<img src=".github/example.gif" />

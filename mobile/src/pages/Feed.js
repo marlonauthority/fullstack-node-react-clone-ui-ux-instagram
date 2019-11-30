@@ -166,8 +166,8 @@ function Feed({ navigation }) {
       <FlatList
         data={feed}
         keyExtractor={post => String(post._id)}
-        onEndReached={() => loadPage()}
-        onEndReachedThreshold={0.5}
+        // onEndReached={() => loadPage()}
+        // onEndReachedThreshold={0.5}
         onViewableItemsChanged={handleViewableChanged}
         viewabilityConfig={{ viewAreaCoveragePercentThreshold: 20 }}
         ListFooterComponent={
