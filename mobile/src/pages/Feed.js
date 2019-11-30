@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import {
   View,
@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 
 import io from 'socket.io-client';
+import LazyImage from '../components/LazyImage';
+
 import api from '../services/api';
 
 import camera from '../assets/camera.png';
@@ -41,6 +43,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 15,
   },
   imageUserAvatar: {
     width: 40,
@@ -66,6 +69,7 @@ const styles = StyleSheet.create({
     marginVertical: 15,
   },
   feedItemFooter: {
+    marginTop: 15,
     paddingHorizontal: 15,
   },
   actions: {
@@ -94,6 +98,7 @@ function Feed({ navigation }) {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [viewable, setViewable] = useState([]);
 
   async function loadPage(pageNumber = page, shouldRefresh = false) {
     if (total && pageNumber > total) return;
@@ -152,6 +157,10 @@ function Feed({ navigation }) {
     setRefreshing(false);
   }
 
+  const handleViewableChanged = useCallback(({ changed }) => {
+    setViewable(changed.map(({ item }) => item._id));
+  }, []);
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -159,6 +168,8 @@ function Feed({ navigation }) {
         keyExtractor={post => String(post._id)}
         onEndReached={() => loadPage()}
         onEndReachedThreshold={0.5}
+        onViewableItemsChanged={handleViewableChanged}
+        viewabilityConfig={{ viewAreaCoveragePercentThreshold: 20 }}
         ListFooterComponent={
           loading && (
             <View style={styles.loading}>
@@ -188,10 +199,19 @@ function Feed({ navigation }) {
               <Image source={more} />
             </View>
 
-            <Image
-              style={styles.feedImage}
+            <LazyImage
+              shouldLoad={viewable.includes(item._id)}
+              aspectRatio={item.aspectratio}
+              smallSource={{
+                uri: `http://localhost:3333/files/${item.imagesmall}`,
+              }}
               source={{ uri: `http://localhost:3333/files/${item.image}` }}
             />
+
+            {/* <Image
+              style={styles.feedImage}
+              source={{ uri: `http://localhost:3333/files/${item.image}` }}
+            /> */}
 
             <View style={styles.feedItemFooter}>
               <View style={styles.actions}>
