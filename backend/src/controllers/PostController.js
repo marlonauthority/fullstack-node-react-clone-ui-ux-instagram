@@ -5,8 +5,19 @@ const fs = require("fs");
 
 module.exports = {
   async index(req, res) {
-    const posts = await Post.find().sort("-createdAt");
-    return res.json(posts);
+    const posts = await Post.paginate(
+      {},
+      {
+        page: req.query.page || 1,
+        limit: 5,
+        sort: "-createdAt"
+      }
+    );
+
+    // const posts = await Post.find().sort("-createdAt");
+    setTimeout(function() {
+      return res.json(posts);
+    }, 1000);
   },
 
   async store(req, res) {

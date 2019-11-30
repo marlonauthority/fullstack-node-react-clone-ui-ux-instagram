@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import {
   View,
   Image,
@@ -6,6 +7,7 @@ import {
   FlatList,
   Text,
   StyleSheet,
+  ActivityIndicator,
 } from 'react-native';
 
 import io from 'socket.io-client';
@@ -20,6 +22,11 @@ import comment from '../assets/comment.png';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  loading: {
+    marginTop: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   feedItem: {
     marginTop: 20,
@@ -82,14 +89,38 @@ const styles = StyleSheet.create({
 });
 
 function Feed({ navigation }) {
-  const [posts, setPosts] = useState([]);
+  const [feed, setFeed] = useState([]);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  async function loadPage(pageNumber = page, shouldRefresh = false) {
+    if (total && pageNumber > total) return;
+
+    setLoading(true);
+
+    const limit = 5;
+    const { data } = await api.get('posts', {
+      params: {
+        page,
+        limit,
+      },
+    });
+
+    const totalItems = data.total;
+    const newData = data.docs;
+
+    setTotal(Math.floor(totalItems / limit));
+
+    setFeed(shouldRefresh ? data.docs : [...feed, ...newData]);
+    setPage(pageNumber + 1);
+    setLoading(false);
+  }
 
   useEffect(() => {
-    async function loadData() {
-      const response = await api.get('posts');
-      setPosts(response.data);
-    }
-    loadData();
+    loadPage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -97,27 +128,46 @@ function Feed({ navigation }) {
       const socket = io('http://localhost:3333');
 
       socket.on('post', newPost => {
-        setPosts([newPost, ...posts]);
+        setFeed([newPost, ...feed]);
       });
 
       socket.on('like', likedPost => {
-        setPosts(
-          posts.map(post => (post._id === likedPost._id ? likedPost : post))
+        setFeed(
+          feed.map(post => (post._id === likedPost._id ? likedPost : post))
         );
       });
     }
     registerToSocket();
-  }, [posts]);
+  }, [feed]);
 
   function handleLike(id) {
     api.post(`/posts/${id}/like`);
   }
 
+  async function refreshList() {
+    setRefreshing(true);
+
+    await loadPage(1, true);
+
+    setRefreshing(false);
+  }
+
   return (
     <View style={styles.container}>
       <FlatList
-        data={posts}
-        keyExtractor={post => post._id}
+        data={feed}
+        keyExtractor={post => String(post._id)}
+        onEndReached={() => loadPage()}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          loading && (
+            <View style={styles.loading}>
+              <ActivityIndicator size="small" color="#000" />
+            </View>
+          )
+        }
+        onRefresh={refreshList}
+        refreshing={refreshing}
         renderItem={({ item }) => (
           <View style={styles.feedItem}>
             <View style={styles.feedItemHeader}>
